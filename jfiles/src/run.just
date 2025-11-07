@@ -14,12 +14,12 @@ dev:
   trap 'kill 0' SIGINT
   PORT=3001 bun run dev 2>&1 | sed 's/^/[WEB] /' &
   sleep 2
-  SERVER_PROXY_URL=http://127.0.0.1:3001 cargo run --bin server 2>&1 | sed 's/^/[RUST] /' &
+  SERVER_PROXY_URL=http://127.0.0.1:3001 cargo run --package rust-nextjs-template --bin server 2>&1 | sed 's/^/[RUST] /' &
   wait
 
 # Run Rust server only (dev mode with proxy)
 api:
-  cd {{ROOT}} && SERVER_PROXY_URL=http://127.0.0.1:3001 cargo run --bin server
+  cd {{ROOT}} && SERVER_PROXY_URL=http://127.0.0.1:3001 cargo run --package rust-nextjs-template --bin server
 
 # Run Next.js dev server only
 frontend:

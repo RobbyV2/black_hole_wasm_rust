@@ -6,9 +6,17 @@ import "../common.just"
 build:
   cd {{ROOT}} && cargo build --release
 
+# Build WASM module
+build-wasm:
+  cd {{ROOT}}/wasm && wasm-pack build --target web --out-dir ../public/wasm --release
+
+# Build WASM for development (faster, with debug symbols)
+build-wasm-dev:
+  cd {{ROOT}}/wasm && wasm-pack build --target web --out-dir ../public/wasm --dev
+
 # Build the API server binary for production
 build-api:
-  cd {{ROOT}} && cargo build --release --bin server
+  cd {{ROOT}} && cargo build --release --package rust-nextjs-template --bin server
 
 # Build Next.js for production
 build-frontend:
@@ -18,13 +26,14 @@ build-frontend:
   cd {{ROOT}} && cp -r public .next/standalone/public
 
 # Build everything for production
-build-all: build-api build-frontend
+build-all: build-wasm build-api build-frontend
   @echo ""
   @echo "✓ Production build complete!"
   @echo ""
   @echo "Production deployment (two servers):"
   @echo "  API Binary: {{ROOT}}/target/release/server"
   @echo "  Frontend: {{ROOT}}/.next/standalone/server.js"
+  @echo "  WASM: {{ROOT}}/public/wasm/"
   @echo ""
   @echo "Run both with: just src prod"
   @echo "Or separately:"

@@ -54,6 +54,9 @@ Cargo.lock
 .idea/
 *.iml
 
+# WASM build output
+/public/wasm/
+
 # Project specific
 autowaka_data.json
 autowaka_data.json.tmp

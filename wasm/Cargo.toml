@@ -1,0 +1,58 @@
+[package]
+name = "black-hole-wasm"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = [
+  "Document",
+  "Window",
+  "Element",
+  "HtmlCanvasElement",
+  "WebGl2RenderingContext",
+  "GpuCanvasContext",
+  "Navigator",
+  "Gpu",
+  "GpuAdapter",
+  "GpuDevice",
+  "GpuQueue",
+  "GpuBuffer",
+  "GpuTexture",
+  "GpuTextureView",
+  "GpuCommandEncoder",
+  "GpuRenderPassEncoder",
+  "GpuComputePassEncoder",
+  "GpuBindGroup",
+  "GpuBindGroupLayout",
+  "GpuPipelineLayout",
+  "GpuRenderPipeline",
+  "GpuComputePipeline",
+  "GpuShaderModule",
+  "GpuSampler",
+  "GpuTextureDescriptor",
+  "GpuBufferDescriptor",
+  "console",
+  "MouseEvent",
+  "WheelEvent",
+  "KeyboardEvent",
+] }
+wgpu = { version = "23", features = ["webgpu", "webgl"] }
+winit = { version = "0.30", features = ["rwh_06"] }
+pollster = "0.3"
+glam = { version = "0.29", features = ["bytemuck"] }
+bytemuck = { version = "1.14", features = ["derive"] }
+console_error_panic_hook = "0.1"
+console_log = "1.0"
+log = "0.4"
+image = { version = "0.25.8", features = ["jpeg"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
