@@ -1,0 +1,39 @@
+[package]
+name = "rust-nextjs-template"
+description = "Rust + Next.js Full-Stack Template"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+axum = { version = "0.7", features = ["ws", "http2"] }
+tokio = { version = "1", features = ["full"] }
+tokio-util = "0.7"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["fs", "trace", "cors"] }
+hyper = { version = "1", features = ["client", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["client-legacy", "tokio"] }
+axum-extra = { version = "0.9", features = ["typed-header", "cookie"] }
+async-stream = "0.3"
+futures-util = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json"] }
+anyhow = "1"
+thiserror = "1"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+argon2 = "0.5"
+rand = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15"
+itertools = "0.13"
+jsonwebtoken = "9"
+base64 = "0.22"
+
+[dev-dependencies]
+
+# Binaries are auto-discovered from src/bin/

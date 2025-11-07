@@ -1,0 +1,69 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+# .env.example is committed (template)
+# Everything else is ignored
+.env.local
+.env*.local
+.env
+.env.development
+.env.production
+.env.test
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Rust
+target/
+debug/
+release/
+*.rs.bk
+*.rlib
+*.prof*
+Cargo.lock
+**/*.rs.bk
+.idea/
+*.iml
+
+# Project specific
+autowaka_data.json
+autowaka_data.json.tmp
+autowaka_data.json.backup
+autowaka_data.*.json
+
+# Playwright
+/frontend/tests/test-results/
+/frontend/tests/playwright-report/
+/frontend/playwright/.cache/
+
+# Project specific
+i.txt
