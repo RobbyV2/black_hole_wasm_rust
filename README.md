@@ -39,3 +39,8 @@ Visit http://localhost:3000/blackhole
 
 Left-click drag: orbit camera
 Scroll: zoom
+
+## Deployment
+
+GitHub Actions auto-deploys to GitHub Pages on push to main
+Enable Pages in repo settings: Settings > Pages > Source: GitHub Actions

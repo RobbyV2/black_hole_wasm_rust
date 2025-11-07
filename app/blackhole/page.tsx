@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { getBasePath } from '../lib/basePath'
 
 type WasmModule = {
   BlackHoleRenderer: {
@@ -39,7 +40,10 @@ export default function BlackHolePage() {
         setStatus('Loading WASM module...')
 
         // Load the WASM module dynamically at runtime
-        const wasmModule = (await fetch('/wasm/black_hole_wasm.js')
+        const basePath = getBasePath()
+        console.log('Base path:', basePath)
+        console.log('WASM path:', `${basePath}/wasm/black_hole_wasm.js`)
+        const wasmModule = (await fetch(`${basePath}/wasm/black_hole_wasm.js`)
           .then(res => {
             if (!res.ok) throw new Error(`Failed to load WASM JS: ${res.status}`)
             return res.text()
@@ -57,7 +61,7 @@ export default function BlackHolePage() {
 
         // Initialize the WASM module first (loads the .wasm file)
         // Pass the full URL to the .wasm file since we're using a blob URL for the JS
-        await wasm.default('/wasm/black_hole_wasm_bg.wasm')
+        await wasm.default(`${getBasePath()}/wasm/black_hole_wasm_bg.wasm`)
 
         if (!mounted) return
 
