@@ -93,6 +93,13 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     var pos = camera.pos / unit_scale;
     var u = 1.0 / length(pos);
     let u0 = u;
+    let r0 = 1.0 / u0;
+
+    // Adaptive step count: fewer steps when far away, since gravity is weaker
+    // At r=10 (close), use full 2000 steps. At r=1000 (far), use ~200 steps
+    let distance_factor = clamp(100.0 / r0, 0.1, 1.0);
+    let adaptive_nsteps = u32(f32(NSTEPS) * distance_factor);
+    let escape_distance = max(1000.0, r0 * 1.5);
 
     let normal_vec = normalize(pos);
     let tangent_vec_unnorm = cross(cross(normal_vec, ray_dir), normal_vec);
@@ -124,8 +131,8 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     var hit_planet = false;
     var planet_normal = vec3<f32>(0.0);
 
-    for (var j = 0u; j < NSTEPS; j++) {
-        let step = MAX_REVOLUTIONS * 2.0 * PI / f32(NSTEPS);
+    for (var j = 0u; j < adaptive_nsteps; j++) {
+        let step = MAX_REVOLUTIONS * 2.0 * PI / f32(adaptive_nsteps);
 
         // Leapfrog integration (in geometric units where r_s = 2.0)
         u += du * step;
@@ -171,8 +178,8 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
             }
         }
 
-        // Escape condition
-        if (r > 1000.0) {
+        // Escape condition: ray has traveled far enough away
+        if (r > escape_distance) {
             break;
         }
     }

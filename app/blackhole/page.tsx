@@ -26,6 +26,7 @@ export default function BlackHolePage() {
   const [cameraInfo, setCameraInfo] = useState<string>('')
   const rendererRef = useRef<Renderer | null>(null)
   const animationFrameRef = useRef<number | null>(null)
+  const cameraInfoIntervalRef = useRef<number | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -39,29 +40,14 @@ export default function BlackHolePage() {
 
         setStatus('Loading WASM module...')
 
-        // Load the WASM module dynamically at runtime
         const basePath = getBasePath()
-        console.log('Base path:', basePath)
-        console.log('WASM path:', `${basePath}/wasm/black_hole_wasm.js`)
-        const wasmModule = (await fetch(`${basePath}/wasm/black_hole_wasm.js`)
-          .then(res => {
-            if (!res.ok) throw new Error(`Failed to load WASM JS: ${res.status}`)
-            return res.text()
-          })
-          .then(code => {
-            // Create a blob URL and import it
-            const blob = new Blob([code], { type: 'application/javascript' })
-            const url = URL.createObjectURL(blob)
-            return import(/* webpackIgnore: true */ url)
-          })) as Promise<WasmModule>
-
-        const wasm = await wasmModule
+        const wasm = (await import(
+          /* webpackIgnore: true */ `${basePath}/wasm/black_hole_wasm.js`
+        )) as WasmModule
 
         if (!mounted) return
 
-        // Initialize the WASM module first (loads the .wasm file)
-        // Pass the full URL to the .wasm file since we're using a blob URL for the JS
-        await wasm.default(`${getBasePath()}/wasm/black_hole_wasm_bg.wasm`)
+        await wasm.default(`${basePath}/wasm/black_hole_wasm_bg.wasm`)
 
         if (!mounted) return
 
@@ -80,8 +66,6 @@ export default function BlackHolePage() {
           if (rendererRef.current && mounted) {
             try {
               rendererRef.current.render()
-              const info = rendererRef.current.camera_info()
-              setCameraInfo(info)
               animationFrameRef.current = requestAnimationFrame(animate)
             } catch (err) {
               console.error('Render error:', err)
@@ -90,7 +74,16 @@ export default function BlackHolePage() {
           }
         }
 
+        const updateCameraInfo = () => {
+          if (rendererRef.current && mounted) {
+            const info = rendererRef.current.camera_info()
+            setCameraInfo(info)
+          }
+        }
+
         animate()
+        updateCameraInfo()
+        cameraInfoIntervalRef.current = window.setInterval(updateCameraInfo, 100)
       } catch (err) {
         console.error('WASM init error:', err)
         if (mounted) {
@@ -107,71 +100,71 @@ export default function BlackHolePage() {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
+      if (cameraInfoIntervalRef.current) {
+        clearInterval(cameraInfoIntervalRef.current)
+      }
     }
   }, [])
 
   useEffect(() => {
-    if (!canvasRef.current || !rendererRef.current) return
+    const canvas = canvasRef.current
+    const renderer = rendererRef.current
+    if (!canvas || !renderer) return
 
     const handleResize = () => {
-      if (canvasRef.current && rendererRef.current) {
-        const { clientWidth, clientHeight } = canvasRef.current
-        canvasRef.current.width = clientWidth
-        canvasRef.current.height = clientHeight
-        rendererRef.current.resize(clientWidth, clientHeight)
+      if (canvas && renderer) {
+        const { clientWidth, clientHeight } = canvas
+        canvas.width = clientWidth
+        canvas.height = clientHeight
+        renderer.resize(clientWidth, clientHeight)
       }
     }
 
     window.addEventListener('resize', handleResize)
     handleResize()
 
-    return () => window.removeEventListener('resize', handleResize)
-  }, [status])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas || !rendererRef.current) return
-
     const handleMouseDown = (e: MouseEvent) => {
-      if (rendererRef.current && canvas) {
+      if (renderer) {
         const rect = canvas.getBoundingClientRect()
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
-        rendererRef.current.on_mouse_button(e.button, true, x, y)
+        renderer.on_mouse_button(e.button, true, x, y)
       }
     }
 
     const handleMouseUp = (e: MouseEvent) => {
-      if (rendererRef.current && canvas) {
+      if (renderer) {
         const rect = canvas.getBoundingClientRect()
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
-        rendererRef.current.on_mouse_button(e.button, false, x, y)
+        renderer.on_mouse_button(e.button, false, x, y)
       }
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (rendererRef.current && canvas) {
+      if (renderer) {
         const rect = canvas.getBoundingClientRect()
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
-        rendererRef.current.on_mouse_move(x, y)
+        renderer.on_mouse_move(x, y)
       }
     }
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault()
-      if (rendererRef.current) {
-        rendererRef.current.on_wheel(e.deltaY * 0.01)
+      if (renderer) {
+        renderer.on_wheel(e.deltaY * 0.01)
       }
     }
 
+    window.addEventListener('resize', handleResize)
     canvas.addEventListener('mousedown', handleMouseDown)
     canvas.addEventListener('mouseup', handleMouseUp)
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('wheel', handleWheel, { passive: false })
 
     return () => {
+      window.removeEventListener('resize', handleResize)
       canvas.removeEventListener('mousedown', handleMouseDown)
       canvas.removeEventListener('mouseup', handleMouseUp)
       canvas.removeEventListener('mousemove', handleMouseMove)

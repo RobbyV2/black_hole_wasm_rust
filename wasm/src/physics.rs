@@ -155,7 +155,7 @@ impl Planet {
         let mean_anomaly = self.mean_motion * time;
 
         let mut eccentric_anomaly = mean_anomaly;
-        for _ in 0..10 {
+        for _ in 0..4 {
             eccentric_anomaly = mean_anomaly + self.eccentricity * eccentric_anomaly.sin();
         }
 

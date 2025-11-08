@@ -21,11 +21,11 @@ impl Camera {
     pub fn new() -> Self {
         Camera {
             target: Vec3::ZERO,
-            radius: 6.34194e10,
+            radius: 1.67e11,
             min_radius: 1e10,
             max_radius: 1e12,
             azimuth: 0.0,
-            elevation: PI / 2.0,
+            elevation: 1.66,
             orbit_speed: 0.01,
             zoom_speed: 25e9,
             dragging: false,

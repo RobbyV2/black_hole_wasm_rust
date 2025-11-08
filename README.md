@@ -28,8 +28,10 @@ Event horizon at r = 2M
 ## Running
 
 ```bash
+# build wasm files first
+cd wasm && wasm-pack build --target web --out-dir ../public/wasm --release
 just src dev
-# or
+# or for production
 just src prod
 ```
 
